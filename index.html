@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sam Andrzejewski — Builder</title>
+<style>
+  :root {
+    --beige: #EFE7D3;
+    --beige-soft: #E6DCC3;
+    --beige-deep: #D9CBAA;
+    --green: #1C3A2A;
+    --green-deep: #122619;
+    --green-soft: #2E5240;
+    --accent: #8FA98A;
+    --ink: #22301F;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--beige);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- Hero ---------- */
+  header.hero {
+    background: var(--green);
+    color: var(--beige);
+    padding: 96px 0 88px;
+    position: relative;
+    overflow: hidden;
+  }
+  header.hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 85% 15%, rgba(239,231,211,0.07), transparent 55%),
+      radial-gradient(ellipse at 10% 90%, rgba(239,231,211,0.05), transparent 50%);
+    pointer-events: none;
+  }
+  .hero .kicker {
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    max-width: 15ch;
+  }
+  .hero h1 em { font-style: italic; color: var(--beige-deep); }
+  .hero p.lede {
+    margin-top: 26px;
+    max-width: 52ch;
+    font-size: 1.12rem;
+    color: rgba(239,231,211,0.85);
+  }
+  .hero nav {
+    margin-top: 40px;
+    display: flex; gap: 26px; flex-wrap: wrap;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .hero nav a {
+    color: var(--beige);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(239,231,211,0.35);
+    padding-bottom: 3px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .hero nav a:hover { color: #fff; border-color: var(--accent); }
+
+  /* ---------- Section headers ---------- */
+  section.block { padding: 84px 0 30px; }
+  .section-head { margin-bottom: 54px; }
+  .section-head .tag {
+    display: inline-block;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--beige);
+    background: var(--green);
+    padding: 6px 14px;
+    border-radius: 3px;
+    margin-bottom: 16px;
+  }
+  .section-head h2 {
+    font-size: clamp(1.9rem, 4vw, 2.7rem);
+    font-weight: 600;
+    color: var(--green-deep);
+    letter-spacing: -0.01em;
+  }
+  .section-head p.sub {
+    margin-top: 10px;
+    color: #5a5643;
+    max-width: 58ch;
+    font-size: 1.02rem;
+  }
+
+  /* ---------- Quest rows ---------- */
+  .quest {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+    padding: 44px 0;
+  }
+  .quest + .quest { border-top: 1px solid var(--beige-deep); }
+
+  .quest .text .qlabel {
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--green-soft);
+    margin-bottom: 10px;
+  }
+  .quest .text h3 {
+    font-size: 1.65rem;
+    font-weight: 600;
+    color: var(--green-deep);
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+  .quest .text p { color: #4c4936; font-size: 1.03rem; }
+  .quest .text p + p { margin-top: 12px; }
+
+  .status {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 18px;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green);
+    border: 1px solid var(--green);
+    padding: 5px 12px;
+    border-radius: 999px;
+  }
+  .status::before {
+    content: "";
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green);
+  }
+  .status.done { background: var(--green); color: var(--beige); }
+  .status.done::before { background: var(--accent); }
+
+  /* photo frames */
+  figure.shot {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow:
+      0 1px 2px rgba(18,38,25,0.18),
+      0 12px 32px -12px rgba(18,38,25,0.35);
+    background: var(--green-deep);
+    aspect-ratio: 4 / 3;
+  }
+  figure.shot img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    z-index: 1;
+  }
+  figure.shot.contain img { object-fit: contain; }
+  figure.shot.on-dark { background: #0e0e0c; }
+  figure.shot.on-light { background: #fdfcf8; }
+  figure.shot figcaption { z-index: 2; }
+  figure.shot .ph {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+    color: rgba(239,231,211,0.75);
+    background:
+      repeating-linear-gradient(45deg,
+        rgba(239,231,211,0.05) 0 12px, transparent 12px 24px),
+      var(--green-soft);
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 20px;
+  }
+  figure.shot .ph::before {
+    content: "▢";
+    font-size: 1.6rem;
+    opacity: 0.7;
+  }
+  figure.shot figcaption {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 24px 16px 10px;
+    background: linear-gradient(transparent, rgba(18,38,25,0.75));
+    color: var(--beige);
+    font-size: 0.82rem;
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+
+  /* alternation: even quests flip photo to the left */
+  .quest:nth-of-type(even) .media { order: -1; }
+
+  /* ---------- Side quests band ---------- */
+  section.block.alt {
+    background: var(--beige-soft);
+    border-top: 1px solid var(--beige-deep);
+    border-bottom: 1px solid var(--beige-deep);
+    margin-top: 60px;
+  }
+  section.block.alt .quest + .quest { border-top-color: #cbbd9c; }
+
+  /* ---------- Guiding principles ---------- */
+  section.principles {
+    background: var(--green);
+    color: var(--beige);
+    padding: 96px 0;
+    margin-top: 60px;
+  }
+  .principles .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .principles .tag {
+    display: inline-block;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--green-deep);
+    background: var(--accent);
+    padding: 6px 14px;
+    border-radius: 3px;
+    margin-bottom: 22px;
+  }
+  .principles blockquote {
+    font-size: clamp(1.5rem, 3.2vw, 2.15rem);
+    font-style: italic;
+    line-height: 1.35;
+    color: var(--beige);
+    max-width: 24ch;
+  }
+  .principles blockquote span { color: var(--beige-deep); }
+  .principles p.note {
+    margin-top: 22px;
+    color: rgba(239,231,211,0.75);
+    font-size: 1rem;
+    max-width: 44ch;
+  }
+  .principles figure.shot {
+    box-shadow: 0 16px 40px -14px rgba(0,0,0,0.5);
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    background: var(--green-deep);
+    color: rgba(239,231,211,0.8);
+    padding: 44px 0;
+    font-size: 0.95rem;
+  }
+  footer .wrap {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 14px;
+  }
+  footer a { color: var(--beige); text-decoration: none; border-bottom: 1px solid rgba(239,231,211,0.35); }
+  footer a:hover { border-color: var(--accent); }
+  footer .mono {
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 760px) {
+    .quest, .principles .grid { grid-template-columns: 1fr; gap: 26px; }
+    .quest .media, .quest:nth-of-type(even) .media { order: -1; }
+    header.hero { padding: 72px 0 64px; }
+    section.block { padding: 64px 0 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Build <em>Beautiful</em> Things</h1>
+    <nav>
+      <a href="#main-quests">Main Quests</a>
+      <a href="#side-quests">Side Quests</a>
+      <a href="#principles">Guiding Principle</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= MAIN QUESTS ================= -->
+<section class="block" id="main-quests">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Main Quests</h2>
+    </div>
+
+    <!-- Quest 1: photo RIGHT -->
+    <div class="quest">
+      <div class="text">
+        <div class="qlabel">Main Quest · 01</div>
+        <h3>Build a company</h3>
+        <p>
+          I believe that the most productive way to contribute to the world is
+          to create a business. It will turn energy into solutions to problems
+          that previously went unsolved.
+        </p>
+        <p>
+          As a 21 year old, I think there is currently no greater mission in my
+          life than creating a business that solves problems in a better way.
+        </p>
+        <span class="status">In Progress</span>
+      </div>
+      <figure class="shot media" data-photo="hardtech-workspace">
+        <div class="ph">Photo: hardtech workspace / circuitry</div>
+        <img src="images/workspace.jpg" alt="Electronics workbench with a subwoofer, breadboard circuits, amplifier boards, soldering iron, and microphone" onerror="this.remove()">
+        <figcaption>The bench mid-build: speaker, breadboard, solder, and a plan.</figcaption>
+      </figure>
+    </div>
+
+    <!-- Quest 2: photo LEFT -->
+    <div class="quest">
+      <div class="text">
+        <div class="qlabel">Main Quest · 02</div>
+        <h3>Earn a physics degree</h3>
+        <p>
+          Physics is the language of the universe and the scaffolding of what
+          is buildable. Understanding physics means understanding what is
+          possible, which is essential in guiding my ambitions.
+        </p>
+        <span class="status">In Progress</span>
+      </div>
+      <figure class="shot media" data-photo="equation-sheet">
+        <div class="ph">Photo: equation sheet</div>
+        <img src="images/equation-sheet.jpg" alt="Handwritten physics equation sheet covering tight-binding models, graphene, and the Hall effect" onerror="this.remove()">
+        <figcaption>Condensed matter physics, condensed onto a single page.</figcaption>
+      </figure>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= SIDE QUESTS ================= -->
+<section class="block alt" id="side-quests">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Side Quests</h2>
+    </div>
+
+    <!-- Quest 1: photo RIGHT -->
+    <div class="quest">
+      <div class="text">
+        <div class="qlabel">Side Quest · 01</div>
+        <h3>Create a fishing videogame: <em>Brackish</em></h3>
+        <p>
+          <strong>Brackish</strong> is a fishing game with one non-negotiable
+          requirement: it has to be genuinely, grin-inducingly fun. Not
+          "fun for an indie game" — fun, period. The tagline tells you the
+          rest: <em>your boat is smaller than you think.</em>
+        </p>
+        <p>
+          Under the calm surface it's a full-stack creative challenge — game
+          feel, the physics of the cast and the fight, the "one more catch"
+          loop, and the creeping suspicion that something much bigger is
+          circling below. Building a world people want to stay in is its own
+          kind of engineering.
+        </p>
+        <span class="status">In Progress</span>
+      </div>
+      <figure class="shot media contain on-dark" data-photo="fishing-game">
+        <div class="ph">Photo: Brackish logo</div>
+        <img src="images/brackish.png" alt="Brackish logo — a fisherman in a small boat above an enormous open-mouthed sea creature" onerror="this.remove()" onload="this.previousElementSibling.style.display='none'">
+        <figcaption>Brackish — your boat is smaller than you think.</figcaption>
+      </figure>
+    </div>
+
+    <!-- Quest 2: photo LEFT -->
+    <div class="quest">
+      <div class="text">
+        <div class="qlabel">Side Quest · 02</div>
+        <h3>Set a Guinness World Record</h3>
+        <p>
+          <strong>Most consecutive L-sit pull-ups: 30.</strong> Set on
+          May 30, 2025 in St. Simons Island, Georgia.
+        </p>
+        <p>
+          An L-sit pull-up makes you hold your legs parallel to the floor for
+          every single rep. I saw that this record was relatively low hanging
+          fruit and spent about a month training for it. Hopefully it doesn't
+          get broken too soon...
+        </p>
+        <span class="status done">Complete</span>
+      </div>
+      <figure class="shot media" data-photo="world-record">
+        <div class="ph">Photo: world record</div>
+        <img src="images/world-record.jpg" alt="Sam holding a framed Guinness World Records certificate for the most consecutive L-sit pull-ups, 30" onerror="this.remove()">
+        <figcaption>Thirty L-sit pull-ups later: the certificate, framed.</figcaption>
+      </figure>
+    </div>
+
+    <!-- Quest 2: photo LEFT -->
+    <div class="quest">
+      <div class="text">
+        <div class="qlabel">Side Quest · 03</div>
+        <h3>Cook eggs 50 different ways</h3>
+        <p>
+          Fifty ways, one humble ingredient. Cooking makes me a more rounded
+          person — someone who can create in the kitchen, not just at the
+          workbench, and who understands the effort behind every delicious dish.
+        </p>
+        <span class="status done">Complete</span>
+      </div>
+      <figure class="shot media" data-photo="cooking-eggs">
+        <div class="ph">Photo: cooking</div>
+        <img src="images/eggs.jpg" alt="Cast-iron skillet of shakshuka — eggs poached in tomato sauce, topped with feta and cilantro" onerror="this.remove()">
+        <figcaption>One of the fifty: shakshuka in cast iron, feta and cilantro on top.</figcaption>
+      </figure>
+    </div>
+
+    <!-- Quest 3: photo RIGHT -->
+    <div class="quest">
+      <div class="text">
+        <div class="qlabel">Side Quest · 04</div>
+        <h3>Memorize 5,000 constants &amp; facts</h3>
+        <p>
+          The mass of the Moon (7.3 × 10²² kg — about 1/81 of Earth). The
+          energy density of diesel. The GDP of Indonesia. I keep a running
+          arsenal of ~5,000 constants and facts, drilled daily with spaced
+          repetition — the raw material for Fermi estimation.
+        </p>
+        <p>
+          With enough anchors in your head, you can sanity-check almost any
+          claim, size almost any market, and estimate almost any quantity to
+          within an order of magnitude — no search bar required.
+        </p>
+        <span class="status">Ongoing</span>
+      </div>
+      <figure class="shot media contain on-light" data-photo="fermi-facts">
+        <div class="ph">Photo: flashcard</div>
+        <img src="images/fermi-card.png" alt="Anki flashcard reading 'Moon mass: 7.3 × 10²² kg (~1/81 of Earth)'" onerror="this.remove()" onload="this.previousElementSibling.style.display='none'">
+        <figcaption>Card 1 of ~5,000: the Moon, weighed.</figcaption>
+      </figure>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= GUIDING PRINCIPLES ================= -->
+<section class="principles" id="principles">
+  <div class="wrap">
+    <div class="grid">
+      <div class="text">
+        <span class="tag">Guiding Principle</span>
+        <blockquote>
+          “To glorify God with this gift of life by <span>creating beautiful things.</span>”
+        </blockquote>
+        <p class="note">
+          Every quest on this page — the physics, the hardware, the game, even
+          the eggs — is downstream of this one sentence. Craft is a form of
+          gratitude.
+        </p>
+      </div>
+      <figure class="shot media" data-photo="rome-trip">
+        <div class="ph">Photo: Rome trip</div>
+        <img src="images/rome.jpg" alt="Ornate baroque church ceiling in Rome — gilded frescoes of saints and angels" onerror="this.remove()">
+        <figcaption>A ceiling someone spent their life on.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>Build Beautiful Things</div>
+    <div class="mono"><a href="mailto:spa50@georgetown.edu">spa50@georgetown.edu</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
